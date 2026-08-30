@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barbearia Style</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#121212">
+</head>
+<body>
+
+    <!-- TELA DE CAPA (Início) -->
+    <div id="tela-capa" class="tela-capa">
+        <div class="capa-conteudo">
+            <h1>Barbearia Style</h1>
+            <p>O seu estilo em boas mãos. Agende seu horário de forma rápida e prática!</p>
+            <button onclick="entrarApp()" class="btn-primary">Agendar Horário</button>
+        </div>
+    </div>
+
+    <!-- APLICATIVO PRINCIPAL -->
+    <div id="app-principal" class="hidden">
+        
+        <header class="app-header">
+            <h2>✂️ Barbearia Style</h2>
+        </header>
+
+        <main class="app-main">
+            
+            <!-- ABA 1: AGENDAMENTO -->
+            <div id="aba-agendar" class="aba-conteudo">
+                
+                <!-- Promoção rápida -->
+                <section class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3 style="color: #f39c12; margin: 0;">🔥 Promoção do Dia</h3>
+                        <button id="edit-promo-btn" style="background: none; border: none; color: #888; font-size: 0.8rem; cursor: pointer;">Editar</button>
+                    </div>
+                    <p id="promo-text" style="margin-top: 8px; font-size: 0.95rem;">Corte + Barba às terças com 15% de desconto!</p>
+                    <div id="promo-edit-form" class="hidden" style="margin-top: 10px;">
+                        <input type="text" id="promo-input" placeholder="Digite a nova promoção..." style="width: 100%; padding: 8px; margin-bottom: 8px; background: #222; border: 1px solid #444; color: white; border-radius: 4px;">
+                        <button onclick="salvarPromocao()" class="btn-primary" style="font-size: 0.8rem; padding: 6px 12px;">Salvar</button>
+                    </div>
+                </section>
+
+                <!-- ESCOLHER O PROFISSIONAL -->
+                <section class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3 style="margin: 0;">1. Escolha o Profissional</h3>
+                        <button id="edit-nomes-btn" style="background: none; border: none; color: #888; font-size: 0.8rem; cursor: pointer;">Editar Nomes</button>
+                    </div>
+                    
+                    <div id="nomes-edit-form" class="hidden" style="margin-top: 10px; margin-bottom: 15px; background: #252525; padding: 10px; border-radius: 6px;">
+                        <input type="text" id="input-barbeiro1" placeholder="Nome do Profissional 1" style="width: 100%; padding: 6px; margin-bottom: 6px; background: #111; border: 1px solid #444; color: white; border-radius: 4px;">
+                        <input type="text" id="input-barbeiro2" placeholder="Nome do Profissional 2" style="width: 100%; padding: 6px; margin-bottom: 6px; background: #111; border: 1px solid #444; color: white; border-radius: 4px;">
+                        <button onclick="salvarNomesBarbeiros()" class="btn-primary" style="font-size: 0.8rem; padding: 6px 12px;">Salvar Nomes</button>
+                    </div>
+
+                    <div class="servicos-lista" style="margin-top: 10px;">
+                        <label class="servico-item" style="display: flex; align-items: center; gap: 10px; background: #2b2b2b; padding: 10px; border-radius: 8px; margin-bottom: 8px; cursor: pointer;">
+                            <input type="radio" name="barbeiro" value="Barbeiro 1" checked onchange="atualizarHorarios()">
+                            <span id="label-barbeiro1" style="font-weight: bold; color: #f39c12;">Barbeiro 1</span>
+                        </label>
+                        <label class="servico-item" style="display: flex; align-items: center; gap: 10px; background: #2b2b2b; padding: 10px; border-radius: 8px; cursor: pointer;">
+                            <input type="radio" name="barbeiro" value="Barbeiro 2" onchange="atualizarHorarios()">
+                            <span id="label-barbeiro2" style="font-weight: bold; color: #f39c12;">Barbeiro 2</span>
+                        </label>
+                    </div>
+                </section>
+
+                <!-- ESCOLHER O SERVIÇO -->
+                <section class="card">
+                    <h3>2. Escolha o Serviço</h3>
+                    <div id="servicos-container" class="servicos-lista"></div>
+                </section>
+
+                <section class="card">
+                    <h3>3. Selecione Data e Horário</h3>
+                    <input type="date" id="data-agendamento" onchange="atualizarHorarios()" style="width: 100%; padding: 10px; background: #222; border: 1px solid #444; color: white; border-radius: 6px; margin-bottom: 15px;">
+                    <div style="display: flex; gap: 15px; font-size: 0.85rem; margin-bottom: 10px;">
+                        <span>🟢 Disponível</span>
+                        <span>🔴 Indisponível</span>
+                    </div>
+                    <div id="horarios-grid" class="horarios-grid"></div>
+                </section>
+
+                <section class="card">
+                    <h3>4. Seus Dados</h3>
+                    <input type="text" id="nome-cliente" placeholder="Seu nome completo" style="width: 100%; padding: 10px; background: #222; border: 1px solid #444; color: white; border-radius: 6px; margin-bottom: 15px;">
+                    <button onclick="prepararAgendamento()" class="btn-primary" style="width: 100%; background: #25d366; color: white; font-weight: bold;">Confirmar e Enviar para WhatsApp</button>
+                </section>
+
+                <section class="card">
+                    <h3>⚙️ Painel do Barbeiro</h3>
+                    <div id="painel-login">
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">Área restrita:</p>
+                        <input type="password" id="senha-barbeiro" placeholder="Digite sua senha" style="width: 100%; padding: 8px; background: #222; border: 1px solid #444; color: white; border-radius: 4px; margin-bottom: 8px;">
+                        <button onclick="acessarPainel()" class="btn-primary" style="font-size: 0.85rem; padding: 8px;">Entrar no Painel</button>
+                    </div>
+                    <div id="painel-conteudo" class="hidden" style="margin-top: 10px;">
+                        <p style="font-size: 0.85rem; color: #2ecc71; font-weight: bold; margin-bottom: 10px;">Painel Desbloqueado</p>
+                        
+                        <!-- Gerenciar Serviços -->
+                        <div style="background: #252525; padding: 10px; border-radius: 6px; margin-bottom: 12px;">
+                            <p style="font-size: 0.85rem; font-weight: bold; margin-bottom: 6px; color: #f39c12;">Cadastrar / Atualizar Serviço</p>
+                            <input type="text" id="novo-servico-nome" placeholder="Nome do Serviço (ex: Corte Cabelo)" style="width: 100%; padding: 6px; margin-bottom: 6px; background: #111; border: 1px solid #444; color: white; border-radius: 4px; font-size: 0.85rem;">
+                            <input type="text" id="novo-servico-preco" placeholder="Preço (ex: 45)" style="width: 100%; padding: 6px; margin-bottom: 6px; background: #111; border: 1px solid #444; color: white; border-radius: 4px; font-size: 0.85rem;">
+                            <button onclick="adicionarServico()" class="btn-primary" style="font-size: 0.8rem; padding: 6px; margin-bottom: 10px;">Salvar / Atualizar Serviço</button>
+                            
+                            <p style="font-size: 0.8rem; color: #aaa; margin-bottom: 4px;">Serviços Atuais:</p>
+                            <div id="painel-servicos-cadastrados" style="display: flex; flex-direction: column; gap: 4px;"></div>
+                        </div>
+
+                        <div id="painel-faturamento" style="background: #252525; padding: 10px; border-radius: 6px; margin-bottom: 12px; font-size: 0.85rem;"></div>
+                        
+                        <div id="painel-ocupados"></div>
+                        <button onclick="fecharPainel()" class="btn-secondary" style="margin-top: 10px; font-size: 0.8rem; background: #444; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer;">Bloquear Painel</button>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ABA 2: PAGAMENTO -->
+            <div id="aba-pagamento" class="aba-conteudo hidden">
+                <section class="card" style="text-align: center;">
+                    <h3>💳 Pagamento via PIX</h3>
+                    <p style="font-size: 0.9rem; color: #aaa; margin-bottom: 15px;">Copie a chave abaixo ou escaneie o código para realizar o pagamento.</p>
+                    
+                    <div style="background: white; padding: 15px; border-radius: 8px; display: inline-block; margin-bottom: 15px;">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=47989037974" alt="QR Code Pix" style="display: block;">
+                    </div>
+
+                    <div style="background: #222; padding: 12px; border-radius: 6px; margin-bottom: 15px; border: 1px dashed #444;">
+                        <p style="color: #f39c12; font-weight: bold; font-size: 0.9rem; margin: 0;">Chave PIX (Telefone):</p>
+                        <p style="color: white; font-size: 1.1rem; margin: 5px 0 0 0; word-break: break-all;">47989037974</p>
+                    </div>
+
+                    <button onclick="copiarPix()" class="btn-primary" style="width: 100%;">Copiar Chave PIX</button>
+                </section>
+            </div>
+
+            <!-- ABA 3: AVALIAÇÕES -->
+            <div id="aba-avaliacoes" class="aba-conteudo hidden">
+                <section class="card">
+                    <h3>⭐ Avaliações e Sugestões</h3>
+                    <p style="font-size: 0.85rem; color: #aaa; margin-bottom: 15px;">Deixe sua nota e comentário!</p>
+                    
+                    <form id="form-feedback" onsubmit="enviarFeedback(event)">
+                        <input type="text" id="feedback-nome" placeholder="Seu nome" required style="width: 100%; padding: 10px; background: #222; border: 1px solid #444; color: white; border-radius: 6px; margin-bottom: 12px;">
+                        
+                        <div id="estrelas-container" style="font-size: 1.8rem; cursor: pointer; margin-bottom: 12px; color: #f39c12;">
+                            <span onclick="selecionarEstrela(1)">★</span>
+                            <span onclick="selecionarEstrela(2)">★</span>
+                            <span onclick="selecionarEstrela(3)">★</span>
+                            <span onclick="selecionarEstrela(4)">★</span>
+                            <span onclick="selecionarEstrela(5)">★</span>
+                        </div>
+                        <input type="hidden" id="feedback-nota" value="5">
+
+                        <textarea id="feedback-texto" placeholder="Deixe seu comentário..." required rows="3" style="width: 100%; padding: 10px; background: #222; border: 1px solid #444; color: white; border-radius: 6px; margin-bottom: 12px; resize: none;"></textarea>
+
+                        <button type="submit" class="btn-primary" style="width: 100%;">Enviar Avaliação</button>
+                    </form>
+                </section>
+
+                <section class="card">
+                    <h3>Comentários dos Clientes:</h3>
+                    <div id="lista-feedback" style="margin-top: 10px; display: flex; flex-direction: column; gap: 10px;"></div>
+                </section>
+            </div>
+
+        </main>
+
+        <nav class="app-nav">
+            <button onclick="mudarAba('agendar')" id="btn-aba-agendar" class="menu-btn ativo">
+                <span>📅</span>
+                <small>Agendar</small>
+            </button>
+            <button onclick="mudarAba('pagamento')" id="btn-aba-pagamento" class="menu-btn">
+                <span>💳</span>
+                <small>PIX</small>
+            </button>
+            <button onclick="mudarAba('avaliacoes')" id="btn-aba-avaliacoes" class="menu-btn">
+                <span>⭐</span>
+                <small>Avaliações</small>
+            </button>
+        </nav>
+
+    </div>
+
+    <!-- MODAL DE SUCESSO -->
+    <div id="modal-sucesso" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 20px;">
+        <div style="background: var(--card-bg); padding: 20px; border-radius: 12px; text-align: center; max-width: 320px; width: 100%; border: 1px solid #333;">
+            <div style="font-size: 3rem; margin-bottom: 10px;">🎉</div>
+            <h3 style="color: #2ecc71; margin-bottom: 10px;">Agendamento Registrado!</h3>
+            <p style="font-size: 0.9rem; color: #ddd; margin-bottom: 20px;">Seu horário foi salvo com sucesso. Clique abaixo para enviar os detalhes no WhatsApp.</p>
+            <button onclick="finalizarNoWhatsApp()" class="btn-primary" style="background: #25d366; color: white; width: 100%;">Abrir WhatsApp agora</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
+</body>
+</html>
